@@ -1,11 +1,31 @@
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Update from "./pages/Update";
+import Items from "./pages/Items";
+
 function App() {
+
   return (
-    <div className="bg-black min-h-screen flex items-center justify-center">
-      <h1 className="text-5xl font-bold text-red-500">
-        Tailwind CSS Working
-      </h1>
-    </div>
+
+    <BrowserRouter>
+
+      <Routes>
+
+        <Route path="/" element={<Login />} />
+
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/update/:id" element={<Update />} />
+        <Route path="/item" element={<Items />} />
+
+      </Routes>
+
+    </BrowserRouter>
+
   );
+
 }
 
 export default App;
