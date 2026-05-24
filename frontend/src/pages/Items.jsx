@@ -1,12 +1,11 @@
 import React from "react";
-
 import axios from "axios";
-
 import { useEffect, useState } from "react";
-
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Items() {
+
+  const navigate = useNavigate();
 
   const [items, setItems] = useState([]);
 
@@ -24,26 +23,17 @@ function Items() {
   // ================= LOAD ITEMS =================
 
   useEffect(() => {
-
     LoadItems();
-
   }, []);
 
 
 
-
   const LoadItems = () => {
-
     axios.get("http://localhost:5000/items")
-
-    .then((res) => {
-
-      setItems(res.data);
-
-    });
-
+      .then((res) => {
+        setItems(res.data);
+      });
   };
-
 
 
 
@@ -51,38 +41,30 @@ function Items() {
 
   const AddItem = () => {
 
-    axios.post(
+    axios.post("http://localhost:5000/add_item", {
+      itemName,
+      Specification,
+      UnitMeasure,
+      Quantity,
+      UnityPrice,
+      TotalQuantity
+    })
 
-      "http://localhost:5000/add_item",
+      .then((res) => {
 
-      {
-        itemName,
-        Specification,
-        UnitMeasure,
-        Quantity,
-        UnityPrice,
-        TotalQuantity
-      }
+        setMessage(res.data.message);
 
-    )
+        LoadItems();
 
-    .then((res) => {
+        setItemName("");
+        setSpecification("");
+        setUnitMeasure("");
+        setQuantity("");
+        setUnityPrice("");
+        setTotalQuantity("");
 
-      setMessage(res.data.message);
-
-      LoadItems();
-
-      setItemName("");
-      setSpecification("");
-      setUnitMeasure("");
-      setQuantity("");
-      setUnityPrice("");
-      setTotalQuantity("");
-
-    });
-
+      });
   };
-
 
 
 
@@ -91,180 +73,215 @@ function Items() {
   const DeleteItem = (id) => {
 
     axios.delete(`http://localhost:5000/delete_item/${id}`)
+      .then((res) => {
 
-    .then((res) => {
+        setMessage(res.data.message);
+        LoadItems();
 
-      setMessage(res.data.message);
-
-      LoadItems();
-
-    });
+      });
 
   };
 
 
 
+  // ================= LOGOUT =================
+
+  const Logout = () => {
+
+    axios.get("http://localhost:5000/logout", {
+      withCredentials: true
+    })
+
+      .then((res) => {
+
+        alert(res.data.message);
+        navigate("/");
+
+      });
+
+  };
+
+
 
   return (
 
-    <div className="p-5">
+    <div className="bg-gray-100 min-h-screen">
 
-      {/* ================= FORM ================= */}
 
-      <div className="bg-white p-5 rounded shadow">
 
-        <h1 className="text-2xl mb-5">
-          Add Item
+      {/* ================= NAVBAR ================= */}
+
+      <div className="bg-blue-600 text-white p-4 flex items-center relative">
+
+
+
+        {/* LEFT LOGO */}
+        <h1 className="text-2xl font-bold">
+          SRMS
         </h1>
 
 
 
-        <div className="grid grid-cols-3 gap-4">
+        {/* CENTER MENU */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
 
-          <input
-            type="text"
-            placeholder="Item Name"
-            value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
-            className="border p-2 rounded"
-          />
+          <ul className="flex gap-4">
 
+            <Link to="/dashboard">
+              <li className="px-4 py-2 bg-blue-500 rounded-lg cursor-pointer">
+                Dashboard
+              </li>
+            </Link>
 
+            <Link to="/items">
+              <li className="px-4 py-2 bg-green-500 rounded-lg cursor-pointer">
+                Items
+              </li>
+            </Link>
 
-          <input
-            type="text"
-            placeholder="Specification"
-            value={Specification}
-            onChange={(e) => setSpecification(e.target.value)}
-            className="border p-2 rounded"
-          />
+            <li className="px-4 py-2 bg-yellow-500 rounded-lg cursor-pointer">
+              #
+            </li>
 
+            <li className="px-4 py-2 bg-lime-400 rounded-lg cursor-pointer">
+              #
+            </li>
 
+            <li className="px-4 py-2 bg-red-500 rounded-lg cursor-pointer">
+              #
+            </li>
 
-          <input
-            type="text"
-            placeholder="Unit Measure"
-            value={UnitMeasure}
-            onChange={(e) => setUnitMeasure(e.target.value)}
-            className="border p-2 rounded"
-          />
-
-
-
-          <input
-            type="number"
-            placeholder="Quantity"
-            value={Quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            className="border p-2 rounded"
-          />
-
-
-
-          <input
-            type="number"
-            placeholder="Unity Price"
-            value={UnityPrice}
-            onChange={(e) => setUnityPrice(e.target.value)}
-            className="border p-2 rounded"
-          />
-
-
-
-          <input
-            type="number"
-            placeholder="Total Quantity"
-            value={TotalQuantity}
-            onChange={(e) => setTotalQuantity(e.target.value)}
-            className="border p-2 rounded"
-          />
+          </ul>
 
         </div>
 
 
 
-        <button
-          onClick={AddItem}
-          className="bg-blue-500 text-white px-5 py-2 rounded mt-5"
-        >
-          Add Item
-        </button>
+        {/* RIGHT LOGOUT */}
+        <div className="ml-auto">
 
+          <button
+            onClick={Logout}
+            className="bg-red-500 px-4 py-2 rounded"
+          >
+            Logout
+          </button>
 
-
-        <h3 className="text-green-500 mt-4">
-          {message}
-        </h3>
+        </div>
 
       </div>
 
 
 
+      {/* ================= CONTENT ================= */}
 
-      {/* ================= TABLE ================= */}
+      <div className="p-5">
 
-      <div className="bg-white p-5 rounded shadow mt-8">
-
-        <table className="w-full border">
-
-          <thead>
-
-            <tr className="bg-gray-200">
-
-              <th className="border p-2">ID</th>
-              <th className="border p-2">Item</th>
-              <th className="border p-2">Specification</th>
-              <th className="border p-2">Quantity</th>
-              <th className="border p-2">Price</th>
-              <th className="border p-2">Action</th>
-
-            </tr>
-
-          </thead>
+        <h1 className="text-3xl mb-5">
+          Items Page
+        </h1>
 
 
 
-          <tbody>
+        {/* FORM */}
+        <div className="bg-white p-6 rounded shadow">
 
-            {
-              items.map((item) => (
+          <div className="grid grid-cols-3 gap-4">
 
-                <tr key={item.item_id}>
+            <input className="border p-2 rounded"
+              placeholder="Item Name"
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+            />
 
-                  <td className="border p-2">
-                    {item.item_id}
-                  </td>
+            <input className="border p-2 rounded"
+              placeholder="Specification"
+              value={Specification}
+              onChange={(e) => setSpecification(e.target.value)}
+            />
 
-                  <td className="border p-2">
-                    {item.itemName}
-                  </td>
+            <input className="border p-2 rounded"
+              placeholder="Unit Measure"
+              value={UnitMeasure}
+              onChange={(e) => setUnitMeasure(e.target.value)}
+            />
 
-                  <td className="border p-2">
-                    {item.Specification}
-                  </td>
+            <input className="border p-2 rounded"
+              placeholder="Quantity"
+              value={Quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+            />
 
-                  <td className="border p-2">
-                    {item.Quantity}
-                  </td>
+            <input className="border p-2 rounded"
+              placeholder="Price"
+              value={UnityPrice}
+              onChange={(e) => setUnityPrice(e.target.value)}
+            />
 
-                  <td className="border p-2">
-                    {item.UnityPrice}
-                  </td>
+            <input className="border p-2 rounded"
+              placeholder="Total"
+              value={TotalQuantity}
+              onChange={(e) => setTotalQuantity(e.target.value)}
+            />
 
-                  <td className="border p-2">
+          </div>
 
-                    <Link
-                      to={`/update/${item.item_id}`}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
-                    >
+
+
+          <button
+            onClick={AddItem}
+            className="bg-blue-600 text-white px-5 py-2 rounded mt-4"
+          >
+            Add Item
+          </button>
+
+
+
+          <p className="text-green-600 mt-3">
+            {message}
+          </p>
+
+        </div>
+
+
+
+        {/* TABLE */}
+        <div className="bg-white p-6 rounded shadow mt-6">
+
+          <table className="w-full">
+
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="p-2">ID</th>
+                <th className="p-2">Item</th>
+                <th className="p-2">Spec</th>
+                <th className="p-2">Qty</th>
+                <th className="p-2">Price</th>
+                <th className="p-2">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              {items.map((item) => (
+
+                <tr key={item.item_id} className="text-center">
+
+                  <td className="p-2">{item.item_id}</td>
+                  <td className="p-2">{item.itemName}</td>
+                  <td className="p-2">{item.Specification}</td>
+                  <td className="p-2">{item.Quantity}</td>
+                  <td className="p-2">{item.UnityPrice}</td>
+
+                  <td className="p-2">
+
+                    <button className="bg-yellow-500 px-3 py-1 rounded text-white mr-2">
                       Edit
-                    </Link>
-
-
+                    </button>
 
                     <button
                       onClick={() => DeleteItem(item.item_id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded"
+                      className="bg-red-500 px-3 py-1 rounded text-white"
                     >
                       Delete
                     </button>
@@ -273,12 +290,13 @@ function Items() {
 
                 </tr>
 
-              ))
-            }
+              ))}
 
-          </tbody>
+            </tbody>
 
-        </table>
+          </table>
+
+        </div>
 
       </div>
 
